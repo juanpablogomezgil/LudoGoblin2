@@ -15,6 +15,8 @@ public class DiceManager : MonoBehaviour
     {
         ClearDice(); // Limpiamos la mesa por si quedaron dados del turno anterior
 
+        AudioManager.Instance?.PlayDiceRoll();
+
         for (int i = 0; i < defaultDiceAmount; i++)
         {
             SpawnDice(6); // Lanzamos un d6 estándar

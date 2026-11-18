@@ -133,6 +133,7 @@ public class AbilitySlot : MonoBehaviour, IDropHandler
             droppedDice.transform.SetParent(transform);
             droppedDice.transform.localPosition = Vector3.zero;
             slottedDice.Add(droppedDice);
+            AudioManager.Instance?.PlayDicePlace();
 
             // Hacemos que este dado sea "transparente" al ratón para que no bloquee los siguientes dados
             if (droppedDice.TryGetComponent(out CanvasGroup cg))
@@ -209,6 +210,7 @@ public class AbilitySlot : MonoBehaviour, IDropHandler
             int finalDamage = abilityData.CalculateDamage(finalDiceValues);
             if (finalDamage > 0)
             {
+                AudioManager.Instance?.PlayAttackSound();
                 targetEnemy.ReceiveAttack(finalDamage);
             }
             

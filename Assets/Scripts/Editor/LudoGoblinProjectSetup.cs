@@ -43,6 +43,7 @@ public static class LudoGoblinProjectSetup
         }
 
         CreateDefaultAbilityAssets();
+        EnsureAudioManagerPrefabExists();
 
         string previousScenePath = SceneManager.GetActiveScene().path;
 
@@ -148,6 +149,36 @@ public static class LudoGoblinProjectSetup
         if (effects != null) ab.statusEffects = effects;
 
         AssetDatabase.CreateAsset(ab, assetPath);
+    }
+
+    [MenuItem("LudoGoblin/Crear o Actualizar Prefab de AudioManager")]
+    public static void EnsureAudioManagerPrefabExists()
+    {
+        string resourcesFolder = "Assets/Resources";
+        if (!AssetDatabase.IsValidFolder(resourcesFolder))
+        {
+            AssetDatabase.CreateFolder("Assets", "Resources");
+        }
+
+        string prefabPath = $"{resourcesFolder}/AudioManager.prefab";
+        if (!File.Exists(prefabPath))
+        {
+            GameObject tempGo = new GameObject("AudioManager");
+            tempGo.AddComponent<AudioManager>();
+            PrefabUtility.SaveAsPrefabAsset(tempGo, prefabPath);
+            Object.DestroyImmediate(tempGo);
+            Debug.Log($"[LudoGoblin] Prefab de AudioManager creado en: {prefabPath}");
+        }
+
+        string prefabsFolder = "Assets/Prefabs";
+        string secondaryPrefabPath = $"{prefabsFolder}/AudioManager.prefab";
+        if (AssetDatabase.IsValidFolder(prefabsFolder) && !File.Exists(secondaryPrefabPath))
+        {
+            AssetDatabase.CopyAsset(prefabPath, secondaryPrefabPath);
+        }
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 }
 #endif

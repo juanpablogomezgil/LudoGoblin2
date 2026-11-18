@@ -249,6 +249,7 @@ public class RouletteManager : MonoBehaviour
         int activeCount = Mathf.Min(targetSegmentCount, rouletteSlices.Count);
         int winningIndex = Random.Range(0, activeCount);
 
+        AudioManager.Instance?.PlayRouletteSpin();
         StartCoroutine(SpinCoroutine(winningIndex, activeCount));
     }
 
@@ -286,6 +287,8 @@ public class RouletteManager : MonoBehaviour
         {
             rouletteWheel.localEulerAngles = new Vector3(0f, 0f, targetAngleNormalized);
         }
+
+        AudioManager.Instance?.PlayRouletteStop();
 
         for (int i = 0; i < playableSlots.Count; i++)
         {

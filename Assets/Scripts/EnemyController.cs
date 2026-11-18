@@ -103,6 +103,7 @@ public class EnemyController : MonoBehaviour
         {
             unitAnimator.SetTrigger("2_Attack");
         }
+        AudioManager.Instance?.PlayAttackSound();
 
         int finalDamage = baseAttackDamage;
 
@@ -135,6 +136,7 @@ public class EnemyController : MonoBehaviour
         {
             unitAnimator.SetTrigger("2_Attack");
         }
+        AudioManager.Instance?.PlayAttackSound();
 
         playerHealth.ApplyStatusEffect(StatusEffectType.Poison, poisonStacksToApply);
         LastActionDescription = $"{enemyName} lanza toxina a Kael (+{poisonStacksToApply} Veneno).";

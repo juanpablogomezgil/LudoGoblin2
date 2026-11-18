@@ -111,6 +111,7 @@ public class BuildScreenController : MonoBehaviour
             {
                 GameManager.Instance.gold -= 15;
                 GameManager.Instance.playerCurrentHealth = Mathf.Min(GameManager.Instance.playerMaxHealth, GameManager.Instance.playerCurrentHealth + 25);
+                AudioManager.Instance?.PlayHealSound();
                 GameManager.Instance.SaveRun();
                 RefreshAll();
             }
@@ -171,6 +172,7 @@ public class BuildScreenController : MonoBehaviour
 
         GameManager.Instance.gold -= item.price;
         item.count++;
+        AudioManager.Instance?.PlayShopBuySound();
         GameManager.Instance.SaveRun();
         RefreshAll();
     }
@@ -269,6 +271,7 @@ public class BuildScreenController : MonoBehaviour
 
         btnObj.GetComponent<Image>().color = bgColor;
         Button btn = btnObj.GetComponent<Button>();
+        btn.onClick.AddListener(() => AudioManager.Instance?.PlayButtonClick());
         btn.onClick.AddListener(onClick);
 
         CreateText(btnObj.transform, label, Vector2.zero, size, 17f, Color.white);

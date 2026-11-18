@@ -64,12 +64,14 @@ public class HealthSystem : MonoBehaviour
             int absorbed = Mathf.Min(currentShield, finalDamage);
             currentShield -= absorbed;
             finalDamage -= absorbed;
+            AudioManager.Instance?.PlayShieldBlockSound();
             Debug.Log($"{gameObject.name} absorbe {absorbed} de daño con Escudo (Escudo restante: {currentShield}).");
         }
 
         if (finalDamage > 0)
         {
             currentHealth = Mathf.Max(0, currentHealth - finalDamage);
+            AudioManager.Instance?.PlayHurtSound();
 
             if (unitAnimator != null)
             {
@@ -90,6 +92,7 @@ public class HealthSystem : MonoBehaviour
         if (amount <= 0 || IsDead) return;
 
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        AudioManager.Instance?.PlayHealSound();
         Debug.Log($"{gameObject.name} recupera {amount} HP ({currentHealth}/{maxHealth}).");
         OnHealthChanged?.Invoke();
     }
@@ -99,6 +102,7 @@ public class HealthSystem : MonoBehaviour
         if (amount <= 0 || IsDead) return;
 
         currentShield += amount;
+        AudioManager.Instance?.PlayShieldBlockSound();
         Debug.Log($"{gameObject.name} gana {amount} de Escudo (Total: {currentShield}).");
         OnHealthChanged?.Invoke();
     }
@@ -190,6 +194,7 @@ public class HealthSystem : MonoBehaviour
 
     private void Die()
     {
+        AudioManager.Instance?.PlayDeathSound();
         if (unitAnimator != null)
         {
             unitAnimator.SetTrigger("4_Death");

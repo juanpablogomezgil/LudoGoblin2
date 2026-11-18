@@ -107,6 +107,7 @@ public class ConsumableBeltUI : MonoBehaviour
         if (entry.count <= 0) return;
 
         entry.count--;
+        AudioManager.Instance?.PlaySpecialDiceUseSound();
 
         string shortTag = entry.sides > 0 ? $"d{entry.sides}" : $"Fijo {entry.fixedValue}";
         if (entry.sides > 0)

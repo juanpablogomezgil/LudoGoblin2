@@ -354,6 +354,7 @@ public class TurnManager : MonoBehaviour
     {
         if (state != BattleState.PlayerTurn) return; 
 
+        AudioManager.Instance?.PlayButtonClick();
         if (endTurnButton != null) endTurnButton.interactable = false;
         
         if (diceManager != null)
@@ -423,6 +424,7 @@ public class TurnManager : MonoBehaviour
         if (enemyHp <= 0)
         {
             state = BattleState.Won;
+            AudioManager.Instance?.PlayVictorySound();
             StopAllCoroutines();
             DisableCombatControls();
             Debug.Log("¡Victoria! Abriendo menú de recompensas...");
@@ -432,6 +434,7 @@ public class TurnManager : MonoBehaviour
         else if (playerHp <= 0)
         {
             state = BattleState.Lost;
+            AudioManager.Instance?.PlayDefeatSound();
             StopAllCoroutines();
             DisableCombatControls();
             Debug.Log("Permadeath: Has perdido todo el progreso de la partida.");

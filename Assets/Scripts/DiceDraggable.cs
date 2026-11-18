@@ -108,6 +108,8 @@ public class DiceDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (mainCanvas == null) mainCanvas = GetComponentInParent<Canvas>();
         if (mainCanvas == null) return;
 
+        AudioManager.Instance?.PlayDicePickup();
+
         // Verificamos de forma segura si el padre NO es una ranura
         if (transform.parent != null && !transform.parent.TryGetComponent(out AbilitySlot slot))
         {
@@ -148,6 +150,7 @@ public class DiceDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void ReturnToOriginalPosition()
     {
+        AudioManager.Instance?.PlayDiceReturn();
         if (originalParent != null)
         {
             transform.SetParent(originalParent);

@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1000000000000000000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2000000000000000000}
+  - component: {fileID: 3000000000000000000}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2000000000000000000
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000000}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3000000000000000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62b82539c1d847b681bc2137c58fb234, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  masterVolume: 1
+  musicVolume: 0.75
+  sfxVolume: 1
+  randomizeSfxPitch: 1
+  pitchVariation: 0.05
+  mainMenuMusic: {fileID: 8300000, guid: e5c910adcd779594696ffe5bf24d1704, type: 3}
+  buildSceneMusic: {fileID: 0}
+  combatMusic: {fileID: 0}
+  defaultMusic: {fileID: 0}
+  musicFadeDuration: 0.8
+  attackSound: {fileID: 8300000, guid: 9eb6969672620eb4db77fa4faa08b7e8, type: 3}
+  hurtSound: {fileID: 0}
+  shieldBlockSound: {fileID: 0}
+  healSound: {fileID: 0}
+  deathSound: {fileID: 0}
+  rouletteSpinSound: {fileID: 8300000, guid: d9f498779b000fe43ab14647a527470f, type: 3}
+  rouletteStopSound: {fileID: 0}
+  diceRollSound: {fileID: 0}
+  dicePlaceSound: {fileID: 0}
+  dicePickupSound: {fileID: 0}
+  diceReturnSound: {fileID: 0}
+  specialDiceUseSound: {fileID: 0}
+  buttonClickSound: {fileID: 0}
+  shopBuySound: {fileID: 0}
+  victorySound: {fileID: 0}
+  defeatSound: {fileID: 0}
