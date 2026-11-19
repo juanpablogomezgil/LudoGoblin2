@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5811aa6796b6ef4418c766fdf3822ea4, type: 3}
+  m_Name: DoubleDiceAttack
+  m_EditorClassIdentifier: Assembly-CSharp::AbilitySO
+  abilityName: Golpe Doble
+  description: Suma 7 o mas con hasta 2 dados para infligir la suma como dano
+  icon: {fileID: 3565688429636676789, guid: ca450f75bb801224d8447f76896624fe, type: 3}
+  requirement: 1
+  targetValue: 7
+  maxDiceSlots: 2
+  useDiceValueAsDamage: 1
+  baseDamageAmount: 0
+  healAmount: 0
+  shieldAmount: 0
+  statusEffects: []

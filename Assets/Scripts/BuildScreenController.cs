@@ -210,11 +210,32 @@ public class BuildScreenController : MonoBehaviour
             AbilitySO ab = gm.equippedRouletteAbilities[i];
             string abName = ab != null ? ab.abilityName : "Vacío";
             string abDesc = ab != null ? $"{ab.GetRequirementSummary()} — {ab.description}" : "";
+            Sprite abIcon = ab != null ? ab.icon : null;
 
-            CreateButton(segmentsListContainer,
+            Button segBtn = CreateButton(segmentsListContainer,
                 $"Segmento #{i + 1}: <color=#FFE066>{abName}</color>  <size=78%>({abDesc})</size>  [Cambiar]",
                 Vector2.zero, new Vector2(780f, 50f), new Color(0.24f, 0.22f, 0.34f, 1f),
                 () => CycleSegmentAbility(segIndex));
+
+            if (abIcon != null && segBtn != null)
+            {
+                GameObject iconObj = new GameObject("AbilityIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(LayoutElement));
+                iconObj.transform.SetParent(segBtn.transform, false);
+                LayoutElement le = iconObj.GetComponent<LayoutElement>();
+                le.ignoreLayout = true;
+
+                RectTransform iconRt = iconObj.GetComponent<RectTransform>();
+                iconRt.anchorMin = new Vector2(0f, 0.5f);
+                iconRt.anchorMax = new Vector2(0f, 0.5f);
+                iconRt.pivot = new Vector2(0.5f, 0.5f);
+                iconRt.anchoredPosition = new Vector2(28f, 0f);
+                iconRt.sizeDelta = new Vector2(38f, 38f);
+
+                Image img = iconObj.GetComponent<Image>();
+                img.sprite = abIcon;
+                img.preserveAspect = true;
+                img.raycastTarget = false;
+            }
         }
 
         // Reconstruir tienda de dados consumibles

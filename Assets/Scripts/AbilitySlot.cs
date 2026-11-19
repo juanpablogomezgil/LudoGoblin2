@@ -19,13 +19,12 @@ public class AbilitySlot : MonoBehaviour, IDropHandler
 
     private bool isUsed = false; // Controla si la ranura ya se activó este turno
     private List<DiceDraggable> slottedDice = new List<DiceDraggable>();
+    private Image backgroundPanelImage;
+    private Image displayedAbilityIcon;
 
     private void Awake()
     {
-        if (abilityIcon == null)
-        {
-            abilityIcon = GetComponent<Image>();
-        }
+        backgroundPanelImage = GetComponent<Image>();
 
         if (turnManager == null)
         {
@@ -43,6 +42,49 @@ public class AbilitySlot : MonoBehaviour, IDropHandler
         }
 
         EnsureInfoTextExists();
+        EnsureAbilityIconImageExists();
+    }
+
+    private void EnsureAbilityIconImageExists()
+    {
+        // Si abilityIcon no está asignado o apunta al mismo Image del fondo del panel,
+        // creamos/recuperamos un sub-objeto específico a la izquierda para mostrar el icono del ScriptableObject.
+        if (abilityIcon != null && abilityIcon.gameObject != gameObject)
+        {
+            displayedAbilityIcon = abilityIcon;
+        }
+        else
+        {
+            Transform existingIcon = transform.Find("SlotAbilityIcon");
+            if (existingIcon != null && existingIcon.TryGetComponent(out Image existingImg))
+            {
+                displayedAbilityIcon = existingImg;
+            }
+            else
+            {
+                GameObject iconObj = new GameObject("SlotAbilityIcon", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(LayoutElement));
+                iconObj.transform.SetParent(transform, false);
+                displayedAbilityIcon = iconObj.GetComponent<Image>();
+            }
+            abilityIcon = displayedAbilityIcon;
+        }
+
+        if (displayedAbilityIcon.TryGetComponent(out LayoutElement le))
+        {
+            le.ignoreLayout = true;
+        }
+
+        if (displayedAbilityIcon.TryGetComponent(out RectTransform rt))
+        {
+            rt.anchorMin = new Vector2(0f, 0.5f);
+            rt.anchorMax = new Vector2(0f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = new Vector2(56f, 0f);
+            rt.sizeDelta = new Vector2(76f, 76f);
+        }
+
+        displayedAbilityIcon.preserveAspect = true;
+        displayedAbilityIcon.raycastTarget = false;
     }
 
     private void EnsureInfoTextExists()
@@ -76,8 +118,8 @@ public class AbilitySlot : MonoBehaviour, IDropHandler
             rt.anchorMin = new Vector2(0.5f, 0.5f);
             rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = Vector2.zero;
-            rt.sizeDelta = new Vector2(490f, 105f);
+            rt.anchoredPosition = new Vector2(44f, 0f);
+            rt.sizeDelta = new Vector2(410f, 105f);
         }
 
         slotInfoText.alignment = TextAlignmentOptions.Center;
@@ -89,14 +131,22 @@ public class AbilitySlot : MonoBehaviour, IDropHandler
     public void PrepareForRouletteSpin()
     {
         EnsureInfoTextExists();
+        EnsureAbilityIconImageExists();
         slottedDice.Clear();
         abilityData = null;
         isUsed = false;
 
-        if (abilityIcon != null)
+        if (backgroundPanelImage == null) backgroundPanelImage = GetComponent<Image>();
+        if (backgroundPanelImage != null)
         {
-            abilityIcon.sprite = null;
-            abilityIcon.color = new Color(0.14f, 0.12f, 0.20f, 0.94f);
+            backgroundPanelImage.sprite = null;
+            backgroundPanelImage.color = new Color(0.14f, 0.12f, 0.20f, 0.94f);
+        }
+
+        if (displayedAbilityIcon != null)
+        {
+            displayedAbilityIcon.sprite = null;
+            displayedAbilityIcon.enabled = false;
         }
 
         UpdateSlotLabel();
@@ -105,15 +155,34 @@ public class AbilitySlot : MonoBehaviour, IDropHandler
     public void SetupSlot(AbilitySO newAbility)
     {
         EnsureInfoTextExists();
+        EnsureAbilityIconImageExists();
 
         slottedDice.Clear();
         abilityData = newAbility;
         isUsed = false;
 
-        if (abilityIcon != null) 
+        if (backgroundPanelImage == null) backgroundPanelImage = GetComponent<Image>();
+        if (backgroundPanelImage != null)
         {
-            abilityIcon.sprite = null;
-            abilityIcon.color = new Color(0.16f, 0.12f, 0.26f, 0.96f);
+            backgroundPanelImage.sprite = null;
+            backgroundPanelImage.color = new Color(0.16f, 0.12f, 0.26f, 0.96f);
+        }
+
+        if (displayedAbilityIcon != null)
+        {
+            if (newAbility != null && newAbility.icon != null)
+            {
+                displayedAbilityIcon.sprite = newAbility.icon;
+                displayedAbilityIcon.type = Image.Type.Simple;
+                displayedAbilityIcon.preserveAspect = true;
+                displayedAbilityIcon.color = Color.white;
+                displayedAbilityIcon.enabled = true;
+            }
+            else
+            {
+                displayedAbilityIcon.sprite = null;
+                displayedAbilityIcon.enabled = false;
+            }
         }
 
         UpdateSlotLabel();
@@ -245,7 +314,8 @@ public class AbilitySlot : MonoBehaviour, IDropHandler
         }
 
         isUsed = true;
-        if (abilityIcon != null) abilityIcon.color = new Color(0.14f, 0.32f, 0.18f, 0.94f);
+        if (backgroundPanelImage == null) backgroundPanelImage = GetComponent<Image>();
+        if (backgroundPanelImage != null) backgroundPanelImage.color = new Color(0.14f, 0.32f, 0.18f, 0.94f);
         UpdateSlotLabel();
 
         // 4. Comprobar si el enemigo ha muerto tras ejecutar la habilidad

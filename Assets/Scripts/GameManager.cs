@@ -170,37 +170,105 @@ public class GameManager : MonoBehaviour
     {
         allAbilitiesCatalog.Clear();
 
-        allAbilitiesCatalog.Add(CreateAbility("Ataque Base", "Inflige 3 de daño más la suma de dados (Req: Suma >= 6).",
-            RequirementType.MinimumValue, 6, 2, true, 3, false, 0, false, 0));
+#if UNITY_EDITOR
+        // 0. En el Editor de Unity, cargamos directamente los ScriptableObjects desde Assets/Scripts/Abilities
+        //    para que cualquier imagen (icon) que asignen en el Inspector se vea al instante sin pasos extra.
+        string[] editorGuids = UnityEditor.AssetDatabase.FindAssets("t:AbilitySO", new[] { "Assets/Scripts/Abilities" });
+        foreach (string guid in editorGuids)
+        {
+            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+            AbilitySO editorAb = UnityEditor.AssetDatabase.LoadAssetAtPath<AbilitySO>(path);
+            if (editorAb != null && !allAbilitiesCatalog.Contains(editorAb))
+            {
+                allAbilitiesCatalog.Add(editorAb);
+            }
+        }
+#endif
 
-        allAbilitiesCatalog.Add(CreateAbility("Golpe Doble", "Suma 7 o más con hasta 2 dados para infligir la suma como daño.",
-            RequirementType.MinimumValue, 7, 2, true, 0, false, 0, false, 0));
+        // 1. Cargamos también todos los AbilitySO existentes en Assets/Resources/Abilities (para builds compiladas)
+        AbilitySO[] resourceAbilities = Resources.LoadAll<AbilitySO>("Abilities");
+        if (resourceAbilities != null && resourceAbilities.Length > 0)
+        {
+            foreach (AbilitySO ab in resourceAbilities)
+            {
+                if (ab != null && !allAbilitiesCatalog.Exists(x => x.abilityName == ab.abilityName || x.name == ab.name))
+                {
+                    allAbilitiesCatalog.Add(ab);
+                }
+            }
+        }
 
-        allAbilitiesCatalog.Add(CreateAbility("Escudo Férreo", "Otorga Escudo igual al valor del dado + 3 (Req: Suma >= 4).",
-            RequirementType.MinimumValue, 4, 2, false, 0, false, 0, true, 3));
+        // 2. También recopilamos cualquier AbilitySO ya referenciado en la escena (por ejemplo en RouletteManager)
+        RouletteManager rm = FindFirstObjectByType<RouletteManager>();
+        if (rm != null && rm.playerDeck != null)
+        {
+            foreach (AbilitySO ab in rm.playerDeck)
+            {
+                if (ab != null && !allAbilitiesCatalog.Exists(x => x.abilityName == ab.abilityName || x.name == ab.name))
+                {
+                    allAbilitiesCatalog.Add(ab);
+                }
+            }
+        }
 
-        allAbilitiesCatalog.Add(CreateAbility("Curación Arcana", "Recupera HP igual al dado + 3 (Req: Suma >= 3).",
-            RequirementType.MinimumValue, 3, 1, false, 0, true, 3, false, 0));
+        Sprite fallbackIcon = null;
+        foreach (AbilitySO ab in allAbilitiesCatalog)
+        {
+            if (ab != null && ab.icon != null)
+            {
+                fallbackIcon = ab.icon;
+                break;
+            }
+        }
 
-        AbilitySO poisonDagger = CreateAbility("Daga Venenosa", "Inflige 3 de daño y aplica 3 cargas de Veneno (Req: Dado <= 4).",
-            RequirementType.MaximumValue, 4, 1, false, 3, false, 0, false, 0);
-        poisonDagger.statusEffects.Add(new StatusEffect { effectType = StatusEffectType.Poison, durationOrStacks = 3 });
-        allAbilitiesCatalog.Add(poisonDagger);
+        // 3. Si falta alguna habilidad base del GDD, la añadimos como respaldo
+        EnsureAbilityInCatalog("Ataque Base", "Inflige 3 de daño más la suma de dados (Req: Suma >= 6).", fallbackIcon,
+            RequirementType.MinimumValue, 6, 2, true, 3, false, 0, false, 0, null);
 
-        AbilitySO fireball = CreateAbility("Bola de Fuego", "Inflige 6 + suma de dados y aplica 2 de Vulnerabilidad (Req: Suma >= 9).",
-            RequirementType.MinimumValue, 9, 2, true, 6, false, 0, false, 0);
-        fireball.statusEffects.Add(new StatusEffect { effectType = StatusEffectType.Vulnerability, durationOrStacks = 2 });
-        allAbilitiesCatalog.Add(fireball);
+        EnsureAbilityInCatalog("Golpe Doble", "Suma 7 o más con hasta 2 dados para infligir la suma como daño.", fallbackIcon,
+            RequirementType.MinimumValue, 7, 2, true, 0, false, 0, false, 0, null);
 
-        AbilitySO soulStrike = CreateAbility("Apuesta Letal", "Si la suma es exactamente 7, inflige 16 de daño y Debilidad.",
-            RequirementType.SumExactly, 7, 2, false, 16, false, 0, false, 0);
-        soulStrike.statusEffects.Add(new StatusEffect { effectType = StatusEffectType.Weakness, durationOrStacks = 2 });
-        allAbilitiesCatalog.Add(soulStrike);
+        EnsureAbilityInCatalog("Escudo Férreo", "Otorga Escudo igual al valor del dado + 3 (Req: Suma >= 4).", fallbackIcon,
+            RequirementType.MinimumValue, 4, 2, false, 0, false, 0, true, 3, null);
 
-        AbilitySO stunHammer = CreateAbility("Martillo de Casino", "Si sacas un 6 exacto, inflige 8 de daño y Aturde 1 turno.",
-            RequirementType.ExactValue, 6, 1, false, 8, false, 0, false, 0);
-        stunHammer.statusEffects.Add(new StatusEffect { effectType = StatusEffectType.Stun, durationOrStacks = 1 });
-        allAbilitiesCatalog.Add(stunHammer);
+        EnsureAbilityInCatalog("Curación Arcana", "Recupera HP igual al dado + 3 (Req: Suma >= 3).", fallbackIcon,
+            RequirementType.MinimumValue, 3, 1, false, 0, true, 3, false, 0, null);
+
+        EnsureAbilityInCatalog("Daga Venenosa", "Inflige 3 de daño y aplica 3 cargas de Veneno (Req: Dado <= 4).", fallbackIcon,
+            RequirementType.MaximumValue, 4, 1, false, 3, false, 0, false, 0,
+            new List<StatusEffect> { new StatusEffect { effectType = StatusEffectType.Poison, durationOrStacks = 3 } });
+
+        EnsureAbilityInCatalog("Bola de Fuego", "Inflige 6 + suma de dados y aplica 2 de Vulnerabilidad (Req: Suma >= 9).", fallbackIcon,
+            RequirementType.MinimumValue, 9, 2, true, 6, false, 0, false, 0,
+            new List<StatusEffect> { new StatusEffect { effectType = StatusEffectType.Vulnerability, durationOrStacks = 2 } });
+
+        EnsureAbilityInCatalog("Apuesta Letal", "Si la suma es exactamente 7, inflige 16 de daño y Debilidad.", fallbackIcon,
+            RequirementType.SumExactly, 7, 2, false, 16, false, 0, false, 0,
+            new List<StatusEffect> { new StatusEffect { effectType = StatusEffectType.Weakness, durationOrStacks = 2 } });
+
+        EnsureAbilityInCatalog("Martillo de Casino", "Si sacas un 6 exacto, inflige 8 de daño y Aturde 1 turno.", fallbackIcon,
+            RequirementType.ExactValue, 6, 1, false, 8, false, 0, false, 0,
+            new List<StatusEffect> { new StatusEffect { effectType = StatusEffectType.Stun, durationOrStacks = 1 } });
+    }
+
+    private void EnsureAbilityInCatalog(
+        string name, string desc, Sprite fallbackIcon,
+        RequirementType req, int targetVal, int maxSlots,
+        bool useDmg, int baseDmg, bool useHeal, int baseHeal, bool useShield, int baseShield,
+        List<StatusEffect> effects)
+    {
+        if (allAbilitiesCatalog.Exists(a => a != null && (a.abilityName == name || a.name == name)))
+        {
+            return;
+        }
+
+        AbilitySO ab = CreateAbility(name, desc, req, targetVal, maxSlots, useDmg, baseDmg, useHeal, baseHeal, useShield, baseShield);
+        ab.icon = fallbackIcon;
+        if (effects != null)
+        {
+            ab.statusEffects.AddRange(effects);
+        }
+        allAbilitiesCatalog.Add(ab);
     }
 
     private AbilitySO CreateAbility(

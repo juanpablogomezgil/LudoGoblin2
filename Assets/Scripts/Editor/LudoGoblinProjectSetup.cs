@@ -29,6 +29,7 @@ public static class LudoGoblinProjectSetup
         }
         else
         {
+            CreateDefaultAbilityAssets();
             EnsureBuildSettingsRegistered();
         }
     }
@@ -123,6 +124,59 @@ public static class LudoGoblinProjectSetup
             "Inflige 6 + suma de dados y aplica 2 cargas de Vulnerabilidad.", defaultIcon,
             RequirementType.MinimumValue, 9, 2, true, 6, false, 0, false, 0,
             new List<StatusEffect> { new StatusEffect { effectType = StatusEffectType.Vulnerability, durationOrStacks = 2 } });
+
+        CreateOrUpdateAbilityAsset($"{folder}/ApuestaLetal.asset", "Apuesta Letal",
+            "Si la suma es exactamente 7, inflige 16 de daño y Debilidad.", defaultIcon,
+            RequirementType.SumExactly, 7, 2, false, 16, false, 0, false, 0,
+            new List<StatusEffect> { new StatusEffect { effectType = StatusEffectType.Weakness, durationOrStacks = 2 } });
+
+        CreateOrUpdateAbilityAsset($"{folder}/MartilloDeCasino.asset", "Martillo de Casino",
+            "Si sacas un 6 exacto, inflige 8 de daño y Aturde 1 turno.", defaultIcon,
+            RequirementType.ExactValue, 6, 1, false, 8, false, 0, false, 0,
+            new List<StatusEffect> { new StatusEffect { effectType = StatusEffectType.Stun, durationOrStacks = 1 } });
+
+        SyncAbilityAssetsToResourcesFolder(folder);
+    }
+
+    private static void SyncAbilityAssetsToResourcesFolder(string sourceFolder)
+    {
+        if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+        {
+            AssetDatabase.CreateFolder("Assets", "Resources");
+        }
+        string targetFolder = "Assets/Resources/Abilities";
+        if (!AssetDatabase.IsValidFolder(targetFolder))
+        {
+            AssetDatabase.CreateFolder("Assets/Resources", "Abilities");
+        }
+
+        string[] guids = AssetDatabase.FindAssets("t:AbilitySO", new[] { sourceFolder });
+        foreach (string guid in guids)
+        {
+            string srcPath = AssetDatabase.GUIDToAssetPath(guid);
+            if (string.IsNullOrEmpty(srcPath)) continue;
+
+            string fileName = Path.GetFileName(srcPath);
+            string dstPath = $"{targetFolder}/{fileName}";
+
+            AbilitySO srcAb = AssetDatabase.LoadAssetAtPath<AbilitySO>(srcPath);
+            if (srcAb == null) continue;
+
+            if (!File.Exists(dstPath))
+            {
+                AssetDatabase.CopyAsset(srcPath, dstPath);
+            }
+            else
+            {
+                // Sincroniza el icono y datos si el usuario editó el ScriptableObject en Assets/Scripts/Abilities
+                AbilitySO dstAb = AssetDatabase.LoadAssetAtPath<AbilitySO>(dstPath);
+                if (dstAb != null && dstAb.icon != srcAb.icon && srcAb.icon != null)
+                {
+                    EditorUtility.CopySerialized(srcAb, dstAb);
+                    EditorUtility.SetDirty(dstAb);
+                }
+            }
+        }
     }
 
     private static void CreateOrUpdateAbilityAsset(

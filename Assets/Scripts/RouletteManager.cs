@@ -118,7 +118,7 @@ public class RouletteManager : MonoBehaviour
                 float angleDeg = 90f - (i * angleStep);
                 float angleRad = angleDeg * Mathf.Deg2Rad;
                 rt.anchoredPosition = new Vector2(Mathf.Cos(angleRad), Mathf.Sin(angleRad)) * sliceRadius;
-                rt.sizeDelta = new Vector2(26f, 26f);
+                rt.sizeDelta = new Vector2(36f, 36f);
                 rt.localRotation = Quaternion.identity;
             }
         }
@@ -151,17 +151,45 @@ public class RouletteManager : MonoBehaviour
         tmp.raycastTarget = false;
     }
 
-    // Si el mazo de prueba solo tiene los 2 ataques iniciales, añade las habilidades del GDD (Escudo, Curación, Veneno, Bola de Fuego)
+    // Si el mazo de prueba solo tiene los 2 ataques iniciales, añade las habilidades del GDD desde Resources/Abilities (o las crea si no existen)
     private void EnsureDefaultGDDAbilitiesInDeck()
     {
         playerDeck.RemoveAll(a => a == null);
+        if (playerDeck.Count >= 6) return;
+
+#if UNITY_EDITOR
+        string[] editorGuids = UnityEditor.AssetDatabase.FindAssets("t:AbilitySO", new[] { "Assets/Scripts/Abilities" });
+        foreach (string guid in editorGuids)
+        {
+            string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+            AbilitySO editorAb = UnityEditor.AssetDatabase.LoadAssetAtPath<AbilitySO>(path);
+            if (editorAb != null && !playerDeck.Exists(a => a.abilityName == editorAb.abilityName || a.name == editorAb.name))
+            {
+                playerDeck.Add(editorAb);
+            }
+        }
+#endif
+
+        // También intentamos cargar los ScriptableObjects reales desde Resources/Abilities (para builds)
+        AbilitySO[] loadedFromResources = Resources.LoadAll<AbilitySO>("Abilities");
+        if (loadedFromResources != null && loadedFromResources.Length > 0)
+        {
+            foreach (AbilitySO resAb in loadedFromResources)
+            {
+                if (resAb != null && !playerDeck.Exists(a => a.abilityName == resAb.abilityName || a.name == resAb.name))
+                {
+                    playerDeck.Add(resAb);
+                }
+            }
+        }
+
         if (playerDeck.Count >= 6) return;
 
         Sprite fallbackIcon = (playerDeck.Count > 0 && playerDeck[0] != null) ? playerDeck[0].icon : null;
 
         if (!playerDeck.Exists(a => a.abilityName.Contains("Escudo")))
         {
-            playerDeck.Add(CreateRuntimeAbility("Escudo férreo", "Otorga escudo igual a la suma de dados + 2.", fallbackIcon,
+            playerDeck.Add(CreateRuntimeAbility("Escudo Férreo", "Otorga escudo igual a la suma de dados + 2.", fallbackIcon,
                 RequirementType.MinimumValue, 4, 2, useDmg: false, baseDmg: 0, useHeal: false, baseHeal: 0, useShield: true, baseShield: 2));
         }
 

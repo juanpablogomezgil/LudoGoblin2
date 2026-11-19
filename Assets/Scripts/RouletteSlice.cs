@@ -46,14 +46,20 @@ public class RouletteSlice : MonoBehaviour
             if (ability.icon != null)
             {
                 sliceIcon.sprite = ability.icon;
+                sliceIcon.type = Image.Type.Simple;
+                sliceIcon.preserveAspect = true;
+                sliceIcon.color = Color.white;
                 if (cachedFallbackSprite == null) cachedFallbackSprite = ability.icon;
             }
-            else if (sliceIcon.sprite == null && cachedFallbackSprite != null)
+            else
             {
-                sliceIcon.sprite = cachedFallbackSprite;
+                if (sliceIcon.sprite == null && cachedFallbackSprite != null)
+                {
+                    sliceIcon.sprite = cachedFallbackSprite;
+                }
+                sliceIcon.color = GetAbilityTint(ability);
             }
             sliceIcon.enabled = true;
-            sliceIcon.color = GetAbilityTint(ability);
         }
 
         EnsureLabelExists();
