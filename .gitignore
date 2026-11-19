@@ -1,0 +1,22 @@
+# Archivos generados por Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# Compilaciones
+[Bb]uild/
+[Bb]uilds/
+
+# Configuracion de IDE
+.vs/
+.idea/
+*.csproj
+*.sln
+*.user
+*.suo
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
