@@ -51,22 +51,22 @@ MonoBehaviour:
   pitchVariation: 0.05
   mainMenuMusic: {fileID: 8300000, guid: e5c910adcd779594696ffe5bf24d1704, type: 3}
   buildSceneMusic: {fileID: 0}
-  combatMusic: {fileID: 0}
+  combatMusic: {fileID: 8300000, guid: 010a1c01660bb4e4f96c6bfa97c19cea, type: 3}
   defaultMusic: {fileID: 0}
   musicFadeDuration: 0.8
-  attackSound: {fileID: 0}
+  attackSound: {fileID: 8300000, guid: baab6cd4ba31ac34b91534c09f6c8455, type: 3}
   hurtSound: {fileID: 0}
-  shieldBlockSound: {fileID: 0}
-  healSound: {fileID: 0}
+  shieldBlockSound: {fileID: 8300000, guid: 7e87041b18e479443b65a3d72692b42d, type: 3}
+  healSound: {fileID: 8300000, guid: 62646542eddc1974bbfab204ab6d39df, type: 3}
   deathSound: {fileID: 0}
-  rouletteSpinSound: {fileID: 0}
-  rouletteStopSound: {fileID: 0}
-  diceRollSound: {fileID: 0}
+  rouletteSpinSound: {fileID: 8300000, guid: b9f4c1cf2a9bfb4409a3b130b3ff4f51, type: 3}
+  rouletteStopSound: {fileID: 8300000, guid: f2576bd244eff8e43a91eb36ff546c21, type: 3}
+  diceRollSound: {fileID: 8300000, guid: 36b5424b8514ef64bbdaf31ef0d0c58b, type: 3}
   dicePlaceSound: {fileID: 0}
   dicePickupSound: {fileID: 0}
   diceReturnSound: {fileID: 0}
   specialDiceUseSound: {fileID: 0}
-  buttonClickSound: {fileID: 0}
-  shopBuySound: {fileID: 0}
+  buttonClickSound: {fileID: 8300000, guid: 58ed7769fbbb0e24592a44759f5f465b, type: 3}
+  shopBuySound: {fileID: 8300000, guid: 5ee4aa26a371dbf408ead4e0ee85ab22, type: 3}
   victorySound: {fileID: 0}
   defeatSound: {fileID: 0}
